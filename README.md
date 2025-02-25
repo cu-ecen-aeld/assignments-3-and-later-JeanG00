@@ -1,28 +1,44 @@
 # aesd-assignments
 This repo contains public starter source code, scripts, and documentation for Advanced Embedded Software Development (ECEN-5713) and Advanced Embedded Linux Development assignments University of Colorado, Boulder.
 
-## Setting Up Git
+## Setting Up env
 
-Use the instructions at [Setup Git](https://help.github.com/en/articles/set-up-git) to perform initial git setup steps. For AESD you will want to perform these steps inside your Linux host virtual or physical machine, since this is where you will be doing your development work.
 
-## Setting up SSH keys
+```bash
+# install dependencies
+sudo apt-get install -y build-essential ruby cmake git openssh-server vim
 
-See instructions in [Setting-up-SSH-Access-To-your-Repo](https://github.com/cu-ecen-aeld/aesd-assignments/wiki/Setting-up-SSH-Access-To-your-Repo) for details.
+# setup cross-compiler
+sudo tar xJf arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz -C /usr/local/arm/
 
-## Specific Assignment Instructions
+# export env
+echo "if [ -d /usr/local/arm/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin ]; then \n PATH=\"$PATH:/usr/local/arm/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin\" \n fi" >> ~/.bashrc
+source ~/.bashrc
 
-Some assignments require further setup to pull in example code or make other changes to your repository before starting.  In this case, see the github classroom assignment start instructions linked from the assignment document for details about how to use this repository.
-
-## Testing
-
-The basis of the automated test implementation for this repository comes from [https://github.com/cu-ecen-aeld/assignment-autotest/](https://github.com/cu-ecen-aeld/assignment-autotest/)
-
-The assignment-autotest directory contains scripts useful for automated testing  Use
+mkdir -p assignments/assignment
+aarch64-none-linux-gnu-gcc -v -print-sysroot > assignments/assignment2/cross-compile.txt
 ```
+
+## [Testing](https://github.com/cu-ecen-aeld/assignment-autotest/)
+
+```bash
+git clone git@github.com:cu-ecen-aeld/assignments-3-and-later-JeanG00.git
+git remote add assignments-base git@github.com:cu-ecen-aeld/aesd-assignments.git
+git fetch assignments-base
+git merge assignments-base/<branchname>
 git submodule update --init --recursive
+# ... DO HOMEWORKS
+git commit -am "feat: assignments done"
+git push -u origin main
 ```
-to synchronize after cloning and before starting each assignment, as discussed in the assignment instructions.
 
-As a part of the assignment instructions, you will setup your assignment repo to perform automated testing using github actions.  See [this page](https://github.com/cu-ecen-aeld/aesd-assignments/wiki/Setting-up-Github-Actions) for details.
+## Assignments Grading Criteria
 
-Note that the unit tests will fail on this repository, since assignments are not yet implemented.  That's your job :) 
+### [assignment-1-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/bnixD/assignment-1-instructions)
+
+### [assignment-2-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/U1Beh/assignment-2-instructions)
+
+### [assignment-3-part-1-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/Nh4LM/assignment-3-part-1-instructions)
+
+1. Your `unit-test.sh` script should pass against your systemcalls implementation.  Note that your github actions will fail due to full-test.sh, we will add support for this in part 2 of the assignment.
+

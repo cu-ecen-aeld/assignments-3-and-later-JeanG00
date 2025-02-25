@@ -1,3 +1,13 @@
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
 #include "systemcalls.h"
 
 /**
@@ -9,13 +19,33 @@
 */
 bool do_system(const char *cmd)
 {
+    if (cmd == NULL) {
+        return false;
+    }
+    // size_t cmd_len = strlen("which ") + strlen(cmd) + strlen(" > /dev/null 2>&1");
+    // char *command = malloc(cmd_len);
+    // if (command == NULL) {
+    //     perror("malloc");
+    //     return false;
+    // }
+    // strcpy(command, "which ");
+    // strcat(command, cmd);
+    // strcat(command, " > /dev/null 2>&1");
+    // printf("BEFORE CALLING do_system : %s\n", command);
 
-/*
- * TODO  add your code here
- *  Call the system() function with the command set in the cmd
- *   and return a boolean true if the system() call completed with success
- *   or false() if it returned a failure
-*/
+    int rc = system(cmd);
+    // printf("SYSTEM EXEC: %s, %d, %d\n", cmd, rc, WIFSIGNALED(rc));
+    if (rc == 0 && WIFSIGNALED(rc) == 0) {
+        return true;
+    }
+    else if (WIFSIGNALED(rc)) {
+        printf("command terminated with signal %d\n", WTERMSIG(rc));
+        return false;
+    }
+    else if (WIFEXITED(rc)) {
+        printf("command exited %d\n", WEXITSTATUS(rc));
+        return false;
+    }
 
     return true;
 }
@@ -45,19 +75,34 @@ bool do_exec(int count, ...)
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
-    // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
-    command[count] = command[count];
 
-/*
- * TODO:
- *   Execute a system command by calling fork, execv(),
- *   and wait instead of system (see LSP page 161).
- *   Use the command[0] as the full path to the command to execute
- *   (first argument to execv), and use the remaining arguments
- *   as second argument to the execv() command.
- *
-*/
+    // printf("STARTing CHILD %s\n", command[0]);
+    // https://stackoverflow.com/questions/42690197/why-does-this-program-with-fork-print-twice/42690260#42690260
+    fflush(stdout);
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        // fork failed
+        return false;
+    }
+    else if (pid == 0) {
+        // In child process: execute the command using execv
+        // int execv(const char *pathname, char *const argv[]);
+        execv(command[0], command);
+        perror("execv");
+        exit(EXIT_FAILURE);
+    } else {
+        int wstatus;
+        // The waitpid() system call suspends execution of the calling thread until a child specified by pid argument has  changed  state.
+        if (waitpid(pid, &wstatus, 0) == -1) {
+            return false;
+        }
+        // If  wstatus is not NULL, wait() and waitpid() store status information in the int to which it points.
+        if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0) {
+            return true;
+        }
+        return false;
+    }
 
     va_end(args);
 
@@ -80,18 +125,32 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
         command[i] = va_arg(args, char *);
     }
     command[count] = NULL;
-    // this line is to avoid a compile warning before your implementation is complete
-    // and may be removed
-    command[count] = command[count];
 
+    printf("STARTing CHILD %s\n", command[0]);
+    fflush(stdout);
 
-/*
- * TODO
- *   Call execv, but first using https://stackoverflow.com/a/13784315/1446624 as a refernce,
- *   redirect standard out to a file specified by outputfile.
- *   The rest of the behaviour is same as do_exec()
- *
-*/
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+    if (fd < 0) { perror("open"); exit(EXIT_FAILURE); }
+    int pid;
+    switch (pid = fork()) {
+        case -1: perror("fork"); return false;
+        case 0:
+            // https://stackoverflow.com/a/13784315/1446624
+            if (dup2(fd, 1) < 0) { perror("dup2"); exit(EXIT_FAILURE); }
+            close(fd);
+            execv(command[0], command);
+            perror("execv");
+            exit(EXIT_FAILURE);
+        default:
+            int wstatus;
+            if (waitpid(pid, &wstatus, 0) == -1) {
+                return false;
+            }
+            if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0) {
+                return true;
+            }
+            return false;
+    }
 
     va_end(args);
 
