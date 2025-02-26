@@ -22,7 +22,12 @@ aarch64-none-linux-gnu-gcc -v -print-sysroot > assignments/assignment2/cross-com
 ## [Testing](https://github.com/cu-ecen-aeld/assignment-autotest/)
 
 ```bash
+# either follow previous
+git remote rm origin
+git remote add origin git@github.com:cu-ecen-aeld/assignments-3-and-later-JeanG00.git
+# or create new repo
 git clone git@github.com:cu-ecen-aeld/assignments-3-and-later-JeanG00.git
+
 git remote add assignments-base git@github.com:cu-ecen-aeld/aesd-assignments.git
 git fetch assignments-base
 git merge assignments-base/<branchname>
@@ -40,5 +45,5 @@ git push -u origin main
 
 ### [assignment-3-part-1-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/Nh4LM/assignment-3-part-1-instructions)
 
-1. Your `unit-test.sh` script should pass against your systemcalls implementation.  Note that your github actions will fail due to full-test.sh, we will add support for this in part 2 of the assignment.
+### [assignment-3-part-2-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/YGf42/assignment-3-part-2-instructions)
 
