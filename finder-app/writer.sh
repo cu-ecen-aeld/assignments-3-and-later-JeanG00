@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+
+# ISSUE: writer.sh not found
+# resolve: `/bin/bash`` isn't included in your simple busybox rootfs
 
 if [ $# -ne 2 ]
 then
