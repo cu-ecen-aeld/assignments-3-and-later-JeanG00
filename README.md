@@ -47,3 +47,4 @@ git push -u origin main
 
 ### [assignment-3-part-2-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/YGf42/assignment-3-part-2-instructions)
 
+### [assignment-4-part-1-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/GT0Ld/assignment-4-part-1-instructions)
