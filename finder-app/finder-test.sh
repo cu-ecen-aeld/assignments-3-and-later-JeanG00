@@ -56,11 +56,12 @@ echo "Removing the old writer utility and compiling as a native application"
 echo "Testing writer.sh username: ${username}"
 for i in $( seq 1 $NUMFILES)
 do
-	./writer.sh "$WRITEDIR/${username}$i.txt" "$WRITESTR"
+	writer.sh "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
 
-OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
+OUTPUTSTRING=$(finder.sh "$WRITEDIR" "$WRITESTR")
 
+writer.sh "/tmp/assignment4-result.txt" "$OUTPUTSTRING"
 # remove temporary directories
 rm -rf /tmp/aeld-data
 
