@@ -48,3 +48,19 @@ git push -u origin main
 ### [assignment-3-part-2-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/YGf42/assignment-3-part-2-instructions)
 
 ### [assignment-4-part-1-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/GT0Ld/assignment-4-part-1-instructions)
+
+### [assignment-5-part-1-instructions](https://www.coursera.org/learn/linux-system-programming-introduction-to-buildroot/supplement/c7ZrG/assignment-5-part-1-instructions)
+
+```sh
+# run the process
+cd server
+make
+./aesdsocket
+# run as a daemon
+sudo ./aesdsocket -d
+
+# to test the script
+./sockettest.sh 
+# check syslogs
+tail -n 50 /var/log/syslog
+```
